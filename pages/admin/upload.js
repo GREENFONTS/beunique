@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
-import { useAppContext } from "@/context/AppContext";
 import Logo from "@/public/logo.png";
 import {
   I3Dcube,
@@ -10,46 +9,20 @@ import {
   ShoppingCart,
   Setting2,
   LogoutCurve,
-  ArrowLeft,
-  ArrowRight,
-  ClipboardExport,
-  Filter,
   CloudAdd,
 } from "iconsax-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { Listbox, Transition } from "@headlessui/react";
 import Multiselect from "multiselect-react-dropdown";
 import { MdClose } from "react-icons/md";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
-// import UploadImages from "@/components/UploadImages";
 
 const AdminUpload = () => {
-  const { userLoggedIn, priceFormatter, authtoken } = useAppContext();
+  const {token } = useSelector(state => state.auth)
 
   const router = useRouter();
-
-  const [loggedIn, setLoggedIn] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== null || typeof window !== "undefined") {
-      if (window.localStorage.getItem("but")) {
-        setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
-      }
-    }
-  }, [loggedIn]);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState,
-    setError,
-    formState: { errors },
-  } = useForm();
 
   const [images, setImages] = useState(null);
 
@@ -76,18 +49,20 @@ const AdminUpload = () => {
 
     var formData = new FormData(data);
 
-    const res = await fetch("https://beunique.live/admin/add_product", {
-      method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${authtoken.access_token}`,
-      },
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((res) => alert(JSON.stringify(res)));
+    console.log(data)
 
-    alert(JSON.stringify(window.localStorage.getItem("but")));
+    // const res = await fetch("https://beunique.live/admin/add_product", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "multipart/form-data",
+    //     // Authorization: `Bearer ${authtoken.access_token}`,
+    //   },
+    //   body: formData,
+    // })
+    //   .then((res) => res.json())
+    //   .then((res) => alert(JSON.stringify(res)));
+
+    // alert(JSON.stringify(window.localStorage.getItem("but")));
 
     // formData.append("file", data.file[0]);
   };
@@ -116,7 +91,7 @@ const AdminUpload = () => {
       </Head>
 
       <section className="min-w-[1200px] w-full h-full mx-auto block p-[16px] md:px-[40px] md:py-[20px] relative font-inter overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-track-[#ACB2BE] scrollbar-thumb-black scrollbar-track-rounded-md scrollbar-thumb-rounded-md">
-        {loggedIn ? (
+        {token ? (
           <>
             <section className="w-[20%] min-h-full fixed top-0 left-0 flex flex-col items-start justify-start pl-[30px] pt-[30px] pb-[30px]">
               <section className="w-fit flex items-end">

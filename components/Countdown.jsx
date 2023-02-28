@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 const Countdown = ({ targetDate }) => {
   const router = useRouter();
 
-  const { setSalesTimerOn } = useAppContext();
+  // const { setSalesTimerOn } = useAppContext();
 
   /////////
   // const [days, hours, minutes, seconds] = useCountdown(targetDate);

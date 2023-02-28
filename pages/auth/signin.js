@@ -4,50 +4,42 @@ import Logo from "@/public/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { Eye } from "iconsax-react";
+import { Eye, EyeSlash } from "iconsax-react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+import { SignInApi } from "@/redux/axios/apis/auth";
+import ErrorHandler from "@/redux/axios/Utils/ErrorHandler";
+import { dispatch } from "@/redux/store";
+import { EmailSignIn } from "@/redux/features/auth/services";
 
-const Signin = ({ referringUrl }) => {
+const Signin = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUserName] = useState("");
+  const [password, setPassword] = useState("");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const onSubmit = async (data) => {
+
+  const onSubmit = async () => {
     try {
-      var loginData = new FormData();
+      const formBody = new FormData();
 
-      loginData.append("username", data.username);
-      loginData.append("password", data.password);
+      formBody.append("username", username);
+      formBody.append("password", password);
+      const res = await SignInApi(formBody);
 
-      const options = {
-        method: "POST",
-        body: loginData,
-      };
+      dispatch(EmailSignIn(res.data));
+      toast.success("Signed in successfully");
 
-      await fetch("https://beunique.live/users/login", options)
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData.access_token) {
-            window.localStorage.setItem("but", JSON.stringify(resData));
-            toast.success("Signed in successfully");
+      // if (referringUrl.includes("/auth/signin") === false) {
+      //   console.log("/")
+      //   router.push(referringUrl);
+      // } else {
 
-            if (referringUrl.includes("/signin") === false) {
-              router.push(referringUrl);
-            } else {
-              router.push("/");
-            }
-          } else {
-            toast.error(resData.detail);
-          }
-        });
+      router.push("/");
+      // }
     } catch (err) {
-      console.log(err);
-      // toast.error(err);
+      const error = ErrorHandler(err);
+      toast.error(error.message);
     }
   };
 
@@ -80,10 +72,7 @@ const Signin = ({ referringUrl }) => {
           <section className="w-full my-8 flex flex-col items-center space-y-6">
             <h3 className="text-[18px] font-bold text-left w-full">Sign In</h3>
 
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="w-full flex flex-col items-center my-0"
-            >
+            <div className="w-full flex flex-col items-center my-0">
               <label
                 htmlFor="email"
                 className="w-full rounded-lg border-[1px] border-[#d0d5dd]"
@@ -92,8 +81,9 @@ const Signin = ({ referringUrl }) => {
                   type="email"
                   placeholder="Email"
                   name="username"
+                  value={username}
                   className="w-full p-[16px] rounded-lg placeholder:text-[16px] placeholder:text-[#344054] font-medium outline-none border-none bg-white"
-                  {...register("username", { required: true })}
+                  onChange={(e) => setUserName(e.target.value)}
                 />
               </label>
 
@@ -104,37 +94,44 @@ const Signin = ({ referringUrl }) => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="password"
+                  value={password}
                   id="password"
                   name="password"
                   className="w-full p-[16px] rounded-lg placeholder:text-[16px] placeholder:text-[#344054] font-medium outline-none border-none bg-white"
-                  {...register("password", { required: true })}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-
-                <Eye
-                  size={20}
-                  className="text-[#344054] absolute top-[50%] -translate-y-[50%] right-[16px] cursor-pointer"
-                  onClick={() => setShowPassword(!showPassword)}
-                />
+                {showPassword ? (
+                  <Eye
+                    size={20}
+                    className="text-[#344054] absolute top-[50%] -translate-y-[50%] right-[16px] cursor-pointer"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  />
+                ) : (
+                  <EyeSlash
+                    size={20}
+                    className="text-[#344054] absolute top-[50%] -translate-y-[50%] right-[16px] cursor-pointer"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  />
+                )}
               </label>
 
               <p className="font-inter text-[16px] text-[#344054] mt-4 mb-10 w-full text-right">
                 <Link href="/forgot-password">Forgot password</Link>
               </p>
-
               <button
-                type="submit"
+                onClick={() => onSubmit()}
                 className="w-full bg-black text-[#fcfcfd] p-[16px] rounded-lg cursor-pointer duration-300"
               >
                 Sign In
               </button>
-            </form>
+            </div>
           </section>
 
           <section className="w-full flex flex-col items-center text-center space-y-8">
             <p className="font-inter text-[16px] text-[#344054]">
               Don&apos;t have an account?{" "}
               <span className="font-bold">
-                <Link href="/signup">Create account</Link>
+                <Link href="/auth/signup">Create account</Link>
               </span>
             </p>
           </section>
@@ -149,6 +146,6 @@ export default Signin;
 export async function getServerSideProps({ req }) {
   const referringUrl = req.headers.referer ? req.headers.referer : null;
   return {
-    props: { referringUrl }, 
+    props: { referringUrl },
   };
 }

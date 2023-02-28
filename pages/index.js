@@ -10,9 +10,10 @@ import main_hero5d from "../public/page_imgs/main_hero5d.jpg";
 
 import { useAppContext } from "@/context/AppContext";
 import { Footer, Header, NewStockSlider, SalesCountdown } from "@/components";
+import { useState } from "react";
 
 export default function Home() {
-  const { isSidebarOpen, salesTimerOn } = useAppContext();
+  const [salesTimerOn, setSalesTimerOn] = useState(true);
 
   const { register, handleSubmit, reset } = useForm();
 

@@ -17,8 +17,8 @@ import { Menu, Transition } from "@headlessui/react";
 const Navigation = () => {
   const router = useRouter();
 
-  const { isHomeSearchOpen, setIsHomeSearchOpen, logoutHandler } =
-    useAppContext();
+  // const { isHomeSearchOpen, setIsHomeSearchOpen, logoutHandler } =
+  //   useAppContext();
 
   const [loggedIn, setLoggedIn] = useState(true);
 

@@ -3,14 +3,14 @@ import Head from "next/head";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../../context/AppContext";
 import {
   Footer,
   Header,
   NewStockSlider,
   ProductCard,
   RadioButton,
-} from "../components";
+} from "../../components";
 import { ArrowRight2, ArrowDown2, Filter, TickCircle } from "iconsax-react";
 import { allProducts } from "@/data/allProducts";
 import { Listbox, Transition } from "@headlessui/react";
@@ -66,7 +66,6 @@ const sizes = [
 ];
 
 const NewIn = () => {
-  const { isSidebarOpen, salesTimerOn } = useAppContext();
 
   const [sortOption, setSortOption] = useState(sortOptions[0]);
   const [sortOptionsFt, setSortOptionsFt] = useState(sortOptions);

@@ -1,9 +1,11 @@
-import { AppProvider } from "../context/AppContext";
+import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import "@/styles/globals.css";
 import { Layout } from "../components";
 import dynamic from "next/dynamic";
+import store from "../redux/store";
+import { AppProvider } from "@/context/AppContext";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   useEffect(() => {
@@ -14,12 +16,14 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }, []);
 
   return (
-    <AppProvider>
-      <Toaster />
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </AppProvider>
+    <Provider store={store}>
+      {/* <AppProvider> */}
+        <Toaster />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      {/* </AppProvider> */}
+     </Provider>
   );
 }
 

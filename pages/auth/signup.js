@@ -4,50 +4,36 @@ import Logo from "@/public/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { Eye } from "iconsax-react";
+import { Eye, EyeSlash } from "iconsax-react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/router";
+import { SignUpApi } from "@/redux/axios/apis/auth";
+import ErrorHandler from "@/redux/axios/Utils/ErrorHandler";
 
 const Signup = () => {
   const router = useRouter();
-  const [regData, setRegData] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
+    const formBody = new FormData();
+    formBody.append("email", email);
+    formBody.append("password", password);
+
     try {
-      const options = {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify(data),
-      };
-
-      await fetch("https://beunique.live/users/create_users", options)
-        .then((res) => res.json())
-        .then((resData) => {
-          const res = resData.detail;
-
-          if (res.includes("Account was successfully created")) {
-            toast.success("Account was successfully created");
-            router.push("/signin");
-          } else {
-            toast.error(res);
-          }
-        });
+      if (email !== "" && password !== "") {
+        await SignUpApi(formBody);
+        toast.success("Account was successfully created");
+        router.push("/auth/signin");
+      }
     } catch (err) {
-      console.log(err);
-      // toast.error(err);
+      // console.log(ErrorHandler(err));
+      const error = ErrorHandler(err)
+      toast.error(error.message);
     }
   };
-  // console.log(errors);
 
   return (
     <>
@@ -80,10 +66,7 @@ const Signup = () => {
               Create your account
             </h3>
 
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="w-full flex flex-col items-center my-0 space-y-4"
-            >
+            <div className="w-full flex flex-col items-center my-0 space-y-4">
               <label
                 htmlFor="email"
                 className="w-full rounded-lg border-[1px] border-[#d0d5dd] "
@@ -92,8 +75,9 @@ const Signup = () => {
                   type="email"
                   placeholder="Email"
                   name="email"
+                  valie={email}
                   className="w-full p-[16px] rounded-lg placeholder:text-[16px] placeholder:text-[#344054] font-medium outline-none border-none bg-white"
-                  {...register("email", { required: true })}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
 
@@ -106,24 +90,32 @@ const Signup = () => {
                   placeholder="password"
                   id="password"
                   name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full p-[16px] rounded-lg placeholder:text-[16px] placeholder:text-[#344054] font-medium outline-none border-none bg-white"
-                  {...register("password", { required: true })}
                 />
-
-                <Eye
-                  size={20}
-                  className="text-[#344054] absolute top-[50%] -translate-y-[50%] right-[16px] cursor-pointer"
-                  onClick={() => setShowPassword(!showPassword)}
-                />
+                {showPassword ? (
+                  <Eye
+                    size={20}
+                    className="text-[#344054] absolute top-[50%] -translate-y-[50%] right-[16px] cursor-pointer"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  />
+                ) : (
+                  <EyeSlash
+                    size={20}
+                    className="text-[#344054] absolute top-[50%] -translate-y-[50%] right-[16px] cursor-pointer"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  />
+                )}
               </label>
 
               <button
-                type="submit"
+                onClick={() => onSubmit()}
                 className="w-full bg-black text-[#fcfcfd] p-[16px] rounded-lg cursor-pointer duration-300"
               >
                 Create account
               </button>
-            </form>
+            </div>
           </section>
 
           <section className="w-full flex flex-col items-center text-center space-y-8">
@@ -140,7 +132,7 @@ const Signup = () => {
             <p className="font-inter text-[16px] text-[#344054]">
               Already have an account?{" "}
               <span className="font-bold">
-                <Link href="/signin">Sign In</Link>
+                <Link href="/auth/signin">Sign In</Link>
               </span>
             </p>
           </section>
