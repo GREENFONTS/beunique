@@ -2,19 +2,10 @@ import { Footer, Header } from "@/components";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const SavedItems = () => {
-  const [loggedIn, setLoggedIn] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== null || typeof window !== "undefined") {
-      if (window.localStorage.getItem("but")) {
-        setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
-      }
-    }
-  }, [loggedIn]);
+const {token} = useSelector(state => state.auth)
 
   return (
     <>
@@ -31,7 +22,7 @@ const SavedItems = () => {
       <Header />
 
       <section className="grid place-items-center w-full p-16">
-        {loggedIn ? (
+        {token ? (
           <h1 className="font-anybody font-bold text-3xl text-[#344054]">
             Saved Items
           </h1>

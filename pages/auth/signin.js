@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import Logo from "@/public/logo.png";
 import Image from "next/image";
 import Link from "next/link";

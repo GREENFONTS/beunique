@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
-
-import { useAppContext } from "@/context/AppContext";
 import Logo from "@/public/logo.png";
 import {
   I3Dcube,
@@ -17,23 +15,11 @@ import {
 } from "iconsax-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const AdminOverview = () => {
-  const { userLoggedIn, priceFormatter, logoutHandler } = useAppContext();
-
   const router = useRouter();
-
-  const [loggedIn, setLoggedIn] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== null || typeof window !== "undefined") {
-      if (window.localStorage.getItem("but")) {
-        setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
-      }
-    }
-  }, [loggedIn]);
+  const { token } = useSelector((state) => state.auth);
 
   return (
     <>
@@ -48,7 +34,7 @@ const AdminOverview = () => {
       </Head>
 
       <section className="min-w-[1200px] w-full h-full mx-auto block p-[16px] md:px-[40px] md:py-[20px] relative font-inter overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-track-[#ACB2BE] scrollbar-thumb-black scrollbar-track-rounded-md scrollbar-thumb-rounded-md">
-        {loggedIn ? (
+        {token ? (
           <>
             <section className="w-[20%] min-h-full fixed top-0 left-0 flex flex-col items-start justify-start pl-[30px] pt-[30px] pb-[30px]">
               <section className="w-fit flex items-end">

@@ -8,4 +8,8 @@ const SignUpApi = (data) => {
   return api.post("/users/create_users", data);
 };
 
-export { SignInApi, SignUpApi };
+const GetUserDetailsApi = () => {
+  return api.get("/users/user_detail");
+};
+
+export { SignInApi, SignUpApi, GetUserDetailsApi };

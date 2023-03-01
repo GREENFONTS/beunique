@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
@@ -17,10 +17,13 @@ import Multiselect from "multiselect-react-dropdown";
 import { MdClose } from "react-icons/md";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-
+import AuthError from "@/components/AuthError";
+import { AddProductApi } from "@/redux/axios/apis/admin";
+import { toast } from "react-hot-toast";
+import ErrorHandler from "@/redux/axios/Utils/ErrorHandler";
 
 const AdminUpload = () => {
-  const {token } = useSelector(state => state.auth)
+  const { token } = useSelector((state) => state.auth);
 
   const router = useRouter();
 
@@ -29,12 +32,20 @@ const AdminUpload = () => {
   const [sizes, setsizes] = useState([]);
 
   const sizesArr = ["sm", "md", "lg", "xl", "xxl"];
-
-  const imageUploader = () => {};
-
-  const onChangePicture = (e) => {
-    setPicture(URL.createObjectURL(e.target.files[0]));
+  const logoutHandler = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    router.push("/auth/signin");
   };
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState,
+    setError,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = async (data) => {
     data.sizes = sizes;
@@ -47,37 +58,29 @@ const AdminUpload = () => {
       );
     }
 
-    var formData = new FormData(data);
+    var formData = new FormData();
+    formData.append("product_name", data.product_name);
+    formData.append("product_price", data.product_price);
+    formData.append("sizes", data.sizes);
+    formData.append("category", data.category);
+    formData.append("units", data.stock);
+    formData.append("weight", data.weight);
+    formData.append("sales_price", data.sales_price);
+    formData.append("description", data.description);
+    formData.append("new_stock", true);
+    formData.append("product_url", data.product_image[0]);
 
-    console.log(data)
-
-    // const res = await fetch("https://beunique.live/admin/add_product", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //     // Authorization: `Bearer ${authtoken.access_token}`,
-    //   },
-    //   body: formData,
-    // })
-    //   .then((res) => res.json())
-    //   .then((res) => alert(JSON.stringify(res)));
-
-    // alert(JSON.stringify(window.localStorage.getItem("but")));
-
-    // formData.append("file", data.file[0]);
+    try {
+      const res = await AddProductApi(formData);
+      if (res.status) {
+        reset();
+        setsizes([])
+        toast.success("Product uploaded successfully");
+      }
+    } catch (error) {
+      toast.error(ErrorHandler(error).message);
+    }
   };
-
-  const categoriesData = [
-    "Short Dress",
-    "Long Dress",
-    "Two Piece",
-    "Gown",
-    "Jumpsuit",
-    "Playsuit",
-  ];
-
-  // console.log(sizes);
-
   return (
     <>
       <Head>
@@ -187,8 +190,9 @@ const AdminUpload = () => {
                       <section className="relative w-[150px] h-[42px]">
                         <input
                           type="file"
+                          // value={images ? images.name : ""}
                           {...register("product_image", { required: true })}
-                          onChange={imageUploader}
+                          onChange={(e) => setImages(e.target.files)}
                           className="cursor-pointer relative w-[150px] h-[42px] z-20 flex items-center justify-center opacity-0 px-2 py-2.5"
                           multiple
                         />
@@ -358,12 +362,12 @@ const AdminUpload = () => {
                           {...register("category", { required: true })}
                           className="w-full px-[16px] py-[8px] rounded-md placeholder:text-[16px] placeholder:text-[#667085] outline-none bg-white border-[1px] border-[#d0d5dd]"
                         >
-                          <option value="Short Dress">Short Dress</option>
-                          <option value="Long Dress">Long Dress</option>
-                          <option value="Two Piece">Two Piece</option>
+                          <option value="short dress">Short Dress</option>
+                          <option value="long dress">Long Dress</option>
+                          <option value="two piece">Two Piece</option>
                           <option value="Gown">Gown</option>
-                          <option value="Jumpsuit">Jumpsuit</option>
-                          <option value="Playsuit">Playsuit</option>
+                          <option value="jumpsuit">Jumpsuit</option>
+                          <option value="playsuit">Playsuit</option>
                         </select>
                       </label>
                       {errors.category && (
@@ -400,8 +404,8 @@ const AdminUpload = () => {
                               border: "1px solid #d0d5dd",
                               "border-radius": "4px",
                               padding: "4px 8px",
-                              "font-size": "14px",
-                              "font-weight": "medium",
+                              fontSize: "14px",
+                              fontWeight: "medium",
                               color: "#1d2939",
                             },
                             multiselectContainer: {
@@ -452,20 +456,7 @@ const AdminUpload = () => {
             </section>
           </>
         ) : (
-          <section className="w-full h-screen flex flex-col items-center justify-center">
-            <h1 className="font-anybody font-bold text-3xl text-[#344054]">
-              Please login to access your account!
-            </h1>
-
-            <Link href="/signin">
-              <button
-                type="button"
-                className="px-2 py-2.5 mt-6 bg-[#101828] text-[#fcfcfd] font-medium hover:font-semibold text-[14px] rounded-lg focus:outline-none focus:ring-0 transition duration-300 ease-in-out flex items-center justify-center w-[150px] h-[42px]"
-              >
-                Login
-              </button>
-            </Link>
-          </section>
+          <AuthError />
         )}
       </section>
     </>

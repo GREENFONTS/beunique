@@ -8,7 +8,6 @@ import main_hero5b from "../public/page_imgs/main_hero5b.jpg";
 import main_hero5c from "../public/page_imgs/main_hero5c.jpg";
 import main_hero5d from "../public/page_imgs/main_hero5d.jpg";
 
-import { useAppContext } from "@/context/AppContext";
 import { Footer, Header, NewStockSlider, SalesCountdown } from "@/components";
 import { useState } from "react";
 

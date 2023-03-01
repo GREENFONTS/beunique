@@ -11,16 +11,13 @@ import {
 } from "iconsax-react";
 import Link from "next/link";
 import Logo from "@/public/logo.png";
-import { useAppContext } from "../context/AppContext";
 import { Menu, Transition } from "@headlessui/react";
+import { useSelector } from "react-redux";
 
 const Navigation = () => {
   const router = useRouter();
 
-  // const { isHomeSearchOpen, setIsHomeSearchOpen, logoutHandler } =
-  //   useAppContext();
-
-  const [loggedIn, setLoggedIn] = useState(true);
+  const {token} = useSelector(state => state.auth)
 
   const [searchInput, setSearchInput] = useState("");
 
@@ -30,22 +27,12 @@ const Navigation = () => {
   const currUrlArr = currUrlRaw.split("/");
   const currUrl = currUrlArr[1] ? currUrlArr[1] : null;
 
-  const [isToken, setIsToken] = useState(false);
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== null || typeof window !== "undefined") {
-      if (router.route !== "" && router.isReady) {
-        if (window.localStorage.getItem("but")) {
-          setIsToken(true);
-
-          if (isToken) {
-            setUserLoggedIn(true);
-          }
-        }
-      }
-    }
-  }, [userLoggedIn, isToken, router.isReady, router.route]);
+const logoutHandler = () => {
+  localStorage.clear()
+  sessionStorage.clear()
+  router.push("/auth/signin")
+}
 
   useEffect(() => {
     if (typeof window !== undefined || typeof window !== null) {
@@ -54,43 +41,43 @@ const Navigation = () => {
           {
             id: 1,
             name: "New In",
-            slug: "/new-in",
+            slug: "/Items/new-in",
             active: currUrl === "new-in" ? true : false,
           },
           {
             id: 2,
             name: "Short Dress",
-            slug: "/short-dress",
+            slug: "/Items/short-dress",
             active: currUrl === "short-dress" ? true : false,
           },
           {
             id: 3,
             name: "Long Dress",
-            slug: "/long-dress",
+            slug: "/Items/long-dress",
             active: currUrl === "long-dress" ? true : false,
           },
           {
             id: 4,
             name: "Two Piece",
-            slug: "/two-piece",
+            slug: "/Items/two-piece",
             active: currUrl === "two-piece" ? true : false,
           },
           {
             id: 5,
             name: "Gown",
-            slug: "/gown",
+            slug: "/Items/gown",
             active: currUrl === "gown" ? true : false,
           },
           {
             id: 6,
             name: "Jumpsuit",
-            slug: "/jumpsuit",
+            slug: "/Items/jumpsuit",
             active: currUrl === "jumpsuit" ? true : false,
           },
           {
             id: 7,
             name: "Playsuit",
-            slug: "/playsuit",
+            slug: "/Items/playsuit",
             active: currUrl === "playsuit" ? true : false,
           },
         ]);
@@ -190,7 +177,7 @@ const Navigation = () => {
                 </Transition>
               </Menu>
 
-              {loggedIn && userLoggedIn ? (
+              {token ? (
                 <Menu
                   as="section"
                   className="relative inline-block align-middle text-left"
@@ -266,7 +253,7 @@ const Navigation = () => {
                       <section className="px-2 py-1 ">
                         <Menu.Item>
                           {({ active }) => (
-                            <Link href="/signin">
+                            <Link href="/auth/signin">
                               <button
                                 className={`${
                                   active
@@ -281,7 +268,7 @@ const Navigation = () => {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <Link href="/signup">
+                            <Link href="/auth/signup">
                               <button
                                 className={`${
                                   active

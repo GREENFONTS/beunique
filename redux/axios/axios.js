@@ -1,14 +1,14 @@
-import axios from 'axios';
-import { setToken } from '../features/auth/authSlice';
-import { dispatch } from '../store';
+import axios from "axios";
+import { setToken } from "../features/auth/authSlice";
+import { dispatch } from "../store";
 
 const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': true,
-  'Content-Type': 'Application/json',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": true,
+  "Content-Type": "Application/json",
 };
 
-axios.defaults.baseURL = 'https://beunique.live';
+axios.defaults.baseURL = "https://beunique.live";
 
 const axiosInstance = axios.create({
   headers,
@@ -17,8 +17,8 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(
-  config => {
-    const token = sessionStorage.getItem("token")
+  (config) => {
+    const token = sessionStorage.getItem("token");
     dispatch(setToken(token));
     if (token) {
       config.headers = {
@@ -29,7 +29,7 @@ axiosInstance.interceptors.request.use(
 
     return config;
   },
-  err => Promise.reject(err)
+  (err) => Promise.reject(err)
 );
 
 export default axiosInstance;

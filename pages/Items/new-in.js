@@ -3,7 +3,6 @@ import Head from "next/head";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { useAppContext } from "../../context/AppContext";
 import {
   Footer,
   Header,
